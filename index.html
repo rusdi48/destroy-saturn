@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="icon" type="image/jpeg" href="saturn.jpg">
     <title>Destroy Saturn</title>
     <style>
@@ -27,27 +29,85 @@
         }
 
         #camera {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 240px;
+            height: 180px;
+            border: 3px solid #ffa500;
+            border-radius: 12px;
+            z-index: 150;
+            object-fit: cover;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+            transform: scaleX(-1);
+        }
+
+        #camera.hidden {
             display: none;
+        }
+
+        #cameraToggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 165, 0, 0.9);
+            border: 2px solid #ffa500;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 160;
+            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        #cameraToggle:hover {
+            background: rgba(255, 165, 0, 1);
+            transform: scale(1.05);
+        }
+
+        #cameraToggle:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            #camera {
+                width: 160px;
+                height: 120px;
+                bottom: 15px;
+                right: 15px;
+                border: 2px solid #ffa500;
+            }
+
+            #cameraToggle {
+                padding: 10px 16px;
+                font-size: 12px;
+                bottom: 15px;
+                right: 15px;
+            }
         }
 
         #statusPanel {
             position: fixed;
             top: 20px;
             left: 20px;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border-radius: 15px;
-            border: 2px solid #222;
-            min-width: 250px;
+            border: 2px solid #333;
+            min-width: 280px;
             z-index: 100;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
         }
 
         #statusPanel.mobile {
-            padding: 15px;
-            min-width: 200px;
-            font-size: 0.9em;
+            padding: 12px;
+            min-width: 220px;
+            font-size: 0.85em;
         }
 
         #statusPanel h2 {
@@ -60,7 +120,8 @@
 
         #statusPanel p {
             margin: 6px 0;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         .status-label {
@@ -73,54 +134,80 @@
             font-weight: bold;
             text-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
         }
+
+        .status-section {
+            margin: 12px 0;
+            padding: 8px 0;
+            border-top: 1px solid rgba(255, 165, 0, 0.2);
+        }
+
+        .status-section:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .performance-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
         
         .panel-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          cursor: pointer;
-          margin-bottom: 10px;
-          user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            user-select: none;
         }
         
         .panel-header h2 {
-          margin-bottom: 0;
+            margin-bottom: 0;
         }
         
         #togglePanelBtn {
-          background: rgba(255, 165, 0, 0.2);
-          border: 1px solid rgba(255, 165, 0, 0.5);
-          color: #ffa500;
-          width: 24px;
-          height: 24px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-          margin: -12px 0 0 12px;
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.5);
+            color: #ffa500;
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
         
         #togglePanelBtn:hover {
-          background: rgba(255, 165, 0, 0.3);
-          border-color: #ffa500;
+            background: rgba(255, 165, 0, 0.3);
+            border-color: #ffa500;
         }
         
         .panel-content {
-          overflow: hidden;
-          transition: max-height 0.3s ease, opacity 0.3s ease;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
         }
         
         .panel-content.collapsed {
-          max-height: 0;
-          opacity: 0;
+            max-height: 0;
+            opacity: 0;
         }
         
         .panel-content.expanded {
-          max-height: 500px;
-          opacity: 1;
+            max-height: 700px;
+            opacity: 1;
         }
         
         #flashOverlay {
@@ -129,7 +216,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,200,100,0.8) 50%, rgba(255,100,0,0) 100%);
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,200,100,0.9) 30%, rgba(255,100,0,0.5) 60%, rgba(255,0,0,0) 100%);
             opacity: 0;
             pointer-events: none;
             z-index: 50;
@@ -154,14 +241,11 @@
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 200;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.8);
             padding: 2rem;
             border-radius: 16px;
-            
-            border: 2px solid #222;
-            
+            border: 2px solid #333;
             backdrop-filter: blur(10px);
-            
         }
 
         #loading h1 {
@@ -187,59 +271,36 @@
         }
 
         .instruction {
-            margin-top: 15px;
-            font-size: 12px;
+            margin-top: 12px;
+            font-size: 11px;
             color: #666;
             line-height: 1.6;
-        }
-
-        .mobile-warning {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 165, 0, 0.8);
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            z-index: 150;
-            text-align: center;
-            max-width: 90%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            font-size: 14px;
         }
 
         @media (max-width: 768px) {
             #statusPanel {
                 top: 10px;
                 left: 10px;
-                padding: 12px 15px;
-                min-width: 180px;
+                padding: 10px 12px;
+                min-width: 200px;
             }
             
             #statusPanel h2 {
-                font-size: 16px;
+                font-size: 15px;
             }
             
             #statusPanel p {
-                font-size: 12px;
+                font-size: 11px;
             }
             
             #togglePanelBtn {
-              width: 20px;
-              height: 20px;
-              font-size: 14px;
-              margin-top: -10px;
+                width: 20px;
+                height: 20px;
+                font-size: 14px;
             }
             
             .instruction {
                 font-size: 10px;
-            }
-            
-            #loading h1 {
-                font-size: 24px;
             }
         }
     </style>
@@ -247,37 +308,63 @@
 <body>
     <div id="flashOverlay"></div>
     <div id="shakeOverlay"></div>
-    
-    <div class="mobile-warning" id="mobileWarning">
-        Mobile Mode: Animations optimized for performance
-    </div>
 
     <div id="loading">
-        <h1>DESTROY SATURN</h1>
+        <h1>🪐 DESTROY SATURN</h1>
         <div class="spinner"></div>
         <p style="margin-top: 20px; font-size: 14px;">Initializing systems...</p>
         <p id="deviceInfo" style="margin-top: 10px; font-size: 12px; color: #888;"></p>
     </div>
 
-<div id="statusPanel" style="display: none;">
-    <div class="panel-header">
-        <h2>SATURN CONTROL</h2>
-        <button id="togglePanelBtn">▼</button>
-    </div>
-    
-    <div class="panel-content expanded" id="panelContent">
-        <p><span class="status-label">Hand:</span> <span id="handStatus" class="status-value">No</span></p>
-        <p><span class="status-label">Gesture:</span> <span id="gestureStatus" class="status-value">None</span></p>
-        <p><span class="status-label">Status:</span> <span id="planetStatus" class="status-value">Normal</span></p>
-        <p><span class="status-label">Device:</span> <span id="deviceMode" class="status-value">Desktop</span></p>
-        <div class="instruction">
-            ✊ <strong>Fist</strong> - Destroy Saturn<br>
-            ✋ <strong>Open</strong> - Restore Saturn<br>
+    <div id="statusPanel" style="display: none;">
+        <div class="panel-header">
+            <h2>🪐 SATURN CONTROL</h2>
+            <button id="togglePanelBtn"><i class="fas fa-chevron-down"></i></button>
+        </div>
+        
+        <div class="panel-content expanded" id="panelContent">
+            <div class="status-section">
+                <p><span class="status-label">Hand:</span> <span id="handStatus" class="status-value">No</span></p>
+                <p><span class="status-label">Gesture:</span> <span id="gestureStatus" class="status-value">None</span></p>
+                <p><span class="status-label">Status:</span> <span id="planetStatus" class="status-value">Normal</span></p>
+                <p><span class="status-label">Control:</span> <span id="controlMode" class="status-value">Auto</span></p>
+            </div>
+
+            <div class="status-section">
+                <p><span class="status-label">FPS:</span> <span id="fpsStatus" class="status-value">0</span></p>
+                <p>
+                    <span class="status-label">GPU:</span> 
+                    <span id="gpuStatus" class="status-value">N/A</span>
+                    <div class="performance-bar"><div class="performance-fill" id="gpuBar" style="width: 0%"></div></div>
+                </p>
+                <p>
+                    <span class="status-label">CPU:</span> 
+                    <span id="cpuStatus" class="status-value">N/A</span>
+                    <div class="performance-bar"><div class="performance-fill" id="cpuBar" style="width: 0%"></div></div>
+                </p>
+                <p>
+                    <span class="status-label">RAM:</span> 
+                    <span id="ramStatus" class="status-value">N/A</span>
+                    <div class="performance-bar"><div class="performance-fill" id="ramBar" style="width: 0%"></div></div>
+                </p>
+            </div>
+
+            <div class="status-section">
+                <p><span class="status-label">Device:</span> <span id="deviceMode" class="status-value">Desktop</span></p>
+                <p><span class="status-label">Particles:</span> <span id="particleCount" class="status-value">0</span></p>
+            </div>
+
+            <div class="instruction">
+                ✊ <strong>Fist</strong> - Destroy Saturn<br>
+                ✋ <strong>Open</strong> - Restore Saturn<br>
+                🤟 <strong>Rock</strong> - Move Planet<br>
+                🖱️ <strong>Drag</strong> - Rotate View
+            </div>
         </div>
     </div>
-</div>
 
-    <video id="camera" autoplay playsinline></video>
+    <video id="camera" autoplay playsinline class="hidden"></video>
+    <button id="cameraToggle"><i class="bx bxs-camera"></i> Show Camera</button>
     <canvas id="planetCanvas"></canvas>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -290,27 +377,52 @@
         
         const deviceConfig = {
             isMobile: isMobile || isTablet,
-            particleCount: isMobile ? 150 : 300,
-            debrisCount: isMobile ? 25 : 50,
+            particleCount: isMobile ? 300 : 600,
+            debrisCount: isMobile ? 40 : 80,
+            smokeCount: isMobile ? 25 : 50,
+            sparkCount: isMobile ? 60 : 120,
             starCount: isMobile ? 1500 : 3000,
-            geometrySegments: isMobile ? 64 : 256,
+            geometrySegments: isMobile ? 64 : 128,
             ringSegments: isMobile ? 128 : 256,
             textureSize: isMobile ? 512 : 1024,
             shadowQuality: isMobile ? 2048 : 4096,
-            animationFrames: isMobile ? 60 : 100,
-            gestureHoldThreshold: isMobile ? 3 : 5
+            animationFrames: isMobile ? 60 : 120,
+            gestureHoldThreshold: isMobile ? 2 : 3,
+            gestureConfidence: isMobile ? 0.6 : 0.65
         };
+
+        let fps = 0;
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+        let gpuUsage = 0;
+        let cpuUsage = 0;
+        let ramUsage = 0;
 
         let isDestroyed = false;
         let isAnimating = false;
         let currentGesture = 'none';
+        let previousGesture = 'none';
         let currentAnimation = null;
         let gestureHoldTime = 0;
+        let gestureConfidenceCount = 0;
         const GESTURE_HOLD_THRESHOLD = deviceConfig.gestureHoldThreshold;
+        const GESTURE_CONFIDENCE_THRESHOLD = 3;
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let targetRotation = { x: 0, y: 0 };
+        let currentRotationVelocity = { x: 0, y: 0 };
+        let autoRotate = true;
+        let lastTouchTime = 0;
+        let touchStartPos = { x: 0, y: 0 };
+        let gestureControlEnabled = false;
+        let cameraVisible = false;
+        let savedParticles = [];
         
         const canvas = document.getElementById('planetCanvas');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.03);
+        scene.fog = new THREE.FogExp2(0x000000, 0.025);
         
         const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 7);
@@ -326,7 +438,7 @@
         renderer.shadowMap.enabled = !deviceConfig.isMobile;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = deviceConfig.isMobile ? THREE.LinearToneMapping : THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = deviceConfig.isMobile ? 1.1 : 1.3;
+        renderer.toneMappingExposure = deviceConfig.isMobile ? 1.1 : 1.4;
         
         const ambientLight = new THREE.AmbientLight(0x404040, deviceConfig.isMobile ? 0.8 : 0.6);
         scene.add(ambientLight);
@@ -337,8 +449,6 @@
             sunLight.castShadow = true;
             sunLight.shadow.mapSize.width = deviceConfig.shadowQuality;
             sunLight.shadow.mapSize.height = deviceConfig.shadowQuality;
-            sunLight.shadow.camera.near = 0.5;
-            sunLight.shadow.camera.far = 50;
         }
         scene.add(sunLight);
 
@@ -361,21 +471,15 @@
         saturnCanvas.height = deviceConfig.textureSize;
         const ctx = saturnCanvas.getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, 0, deviceConfig.textureSize);
-        if (deviceConfig.isMobile) {
-            gradient.addColorStop(0, '#f5e6d3');
-            gradient.addColorStop(0.3, '#e8c468');
-            gradient.addColorStop(0.6, '#c9974d');
-            gradient.addColorStop(1, '#f5e6d3');
-        } else {
-            gradient.addColorStop(0, '#f5e6d3');
-            gradient.addColorStop(0.15, '#e8c468');
-            gradient.addColorStop(0.3, '#d4a76a');
-            gradient.addColorStop(0.45, '#c9974d');
-            gradient.addColorStop(0.6, '#e8c468');
-            gradient.addColorStop(0.75, '#d4a76a');
-            gradient.addColorStop(0.9, '#c9a165');
-            gradient.addColorStop(1, '#f5e6d3');
-        }
+        
+        gradient.addColorStop(0, '#f5e6d3');
+        gradient.addColorStop(0.15, '#e8c468');
+        gradient.addColorStop(0.3, '#d4a76a');
+        gradient.addColorStop(0.45, '#c9974d');
+        gradient.addColorStop(0.6, '#e8c468');
+        gradient.addColorStop(0.75, '#d4a76a');
+        gradient.addColorStop(0.9, '#c9a165');
+        gradient.addColorStop(1, '#f5e6d3');
         
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, deviceConfig.textureSize, deviceConfig.textureSize);
@@ -420,21 +524,14 @@
             deviceConfig.textureSize/2
         );
         
-        if (deviceConfig.isMobile) {
-            ringGradient.addColorStop(0, 'rgba(230, 180, 70, 0.9)');
-            ringGradient.addColorStop(0.3, 'rgba(200, 150, 50, 0.8)');
-            ringGradient.addColorStop(0.6, 'rgba(220, 170, 60, 0.7)');
-            ringGradient.addColorStop(1, 'rgba(220, 170, 60, 0.5)');
-        } else {
-            ringGradient.addColorStop(0, 'rgba(230, 180, 70, 0.95)');
-            ringGradient.addColorStop(0.15, 'rgba(200, 150, 50, 0.9)');
-            ringGradient.addColorStop(0.25, 'rgba(180, 130, 40, 0.85)');
-            ringGradient.addColorStop(0.4, 'rgba(220, 170, 60, 0.8)');
-            ringGradient.addColorStop(0.55, 'rgba(190, 140, 45, 0.75)');
-            ringGradient.addColorStop(0.7, 'rgba(210, 160, 55, 0.7)');
-            ringGradient.addColorStop(0.85, 'rgba(180, 130, 40, 0.6)');
-            ringGradient.addColorStop(1, 'rgba(220, 170, 60, 0.5)');
-        }
+        ringGradient.addColorStop(0, 'rgba(230, 180, 70, 0.95)');
+        ringGradient.addColorStop(0.15, 'rgba(200, 150, 50, 0.9)');
+        ringGradient.addColorStop(0.25, 'rgba(180, 130, 40, 0.85)');
+        ringGradient.addColorStop(0.4, 'rgba(220, 170, 60, 0.8)');
+        ringGradient.addColorStop(0.55, 'rgba(190, 140, 45, 0.75)');
+        ringGradient.addColorStop(0.7, 'rgba(210, 160, 55, 0.7)');
+        ringGradient.addColorStop(0.85, 'rgba(180, 130, 40, 0.6)');
+        ringGradient.addColorStop(1, 'rgba(220, 170, 60, 0.5)');
         
         ringCtx.fillStyle = ringGradient;
         ringCtx.fillRect(0, 0, deviceConfig.textureSize, deviceConfig.textureSize);
@@ -446,7 +543,7 @@
             const x = deviceConfig.textureSize/2 + Math.cos(angle) * radius;
             const y = deviceConfig.textureSize/2 + Math.sin(angle) * radius;
             const brightness = Math.random() * 40;
-            ringCtx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${deviceConfig.isMobile ? 0.2 : 0.3})`;
+            ringCtx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, 0.3)`;
             ringCtx.fillRect(x, y, 1, 1);
         }
         
@@ -458,7 +555,8 @@
             transparent: true,
             opacity: 0.85,
             shininess: deviceConfig.isMobile ? 50 : 80,
-            specular: 0x888888
+            specular: 0x888888,
+            depthWrite: true
         });
         
         const ring = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -495,56 +593,75 @@
         scene.add(saturnGroup);
 
         const originalScale = { x: 1, y: 1, z: 1 };
+        const originalRingRotation = { x: ring.rotation.x, y: ring.rotation.y, z: ring.rotation.z };
+        const originalRingOpacity = 0.85;
         const originalColor = saturnMaterial.color.clone();
         const originalPosition = saturnGroup.position.clone();
 
         let particles = [];
         let debris = [];
+        let smoke = [];
+        let sparks = [];
         let shockwaves = [];
         let fireRings = [];
         
         function createExplosionParticles() {
+            savedParticles = [];
+            
             const particleCount = deviceConfig.particleCount;
             
             for (let i = 0; i < particleCount; i++) {
-                const size = Math.random() * 0.2 + 0.05;
-                const particleGeometry = new THREE.SphereGeometry(size, deviceConfig.isMobile ? 6 : 12, deviceConfig.isMobile ? 6 : 12);
-                const color = new THREE.Color();
+                const size = Math.random() * 0.12 + 0.02;
+                const particleGeometry = new THREE.BoxGeometry(size, size, size);
                 
-                const rand = Math.random();
-                if (rand < 0.25) {
-                    color.setHex(0xff2200);
-                } else if (rand < 0.5) {
-                    color.setHex(0xff6600);
-                } else if (rand < 0.7) {
-                    color.setHex(0xffaa00);
-                } else if (rand < 0.85) {
-                    color.setHex(0xffff00);
+                const colorChoice = Math.random();
+                let color;
+                if (colorChoice < 0.3) {
+                    color = new THREE.Color(0xf5e6d3);
+                } else if (colorChoice < 0.6) {
+                    color = new THREE.Color(0xe8c468);
                 } else {
-                    color.setHex(0xffffff);
+                    color = new THREE.Color(0xd4a76a);
                 }
                 
-                const particleMaterial = new THREE.MeshBasicMaterial({
+                const particleMaterial = new THREE.MeshPhongMaterial({
                     color: color,
+                    emissive: new THREE.Color(0xff4400),
+                    emissiveIntensity: 0.6,
                     transparent: true,
                     opacity: 1
                 });
                 
                 const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-                particle.position.copy(saturn.position);
                 
-                const speed = Math.random() * 0.2 + 0.08;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.random() * Math.PI;
+                const radius = 1.4;
                 
-                particle.velocity = new THREE.Vector3(
-                    Math.sin(phi) * Math.cos(theta) * speed,
-                    Math.sin(phi) * Math.sin(theta) * speed,
-                    Math.cos(phi) * speed
+                particle.position.set(
+                    Math.sin(phi) * Math.cos(theta) * radius,
+                    Math.sin(phi) * Math.sin(theta) * radius,
+                    Math.cos(phi) * radius
+                );
+                
+                const speed = Math.random() * 0.18 + 0.08;
+                particle.velocity = particle.position.clone().normalize().multiplyScalar(speed);
+                
+                particle.rotationSpeed = new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.3,
+                    (Math.random() - 0.5) * 0.3,
+                    (Math.random() - 0.5) * 0.3
                 );
                 
                 particle.life = 1.0;
                 particle.decay = Math.random() * 0.008 + 0.004;
+                particle.gravity = -0.001;
+                
+                savedParticles.push({
+                    mesh: particle,
+                    initialPos: particle.position.clone(),
+                    initialColor: color.clone()
+                });
                 
                 scene.add(particle);
                 particles.push(particle);
@@ -552,121 +669,223 @@
             
             const debrisCount = deviceConfig.debrisCount;
             for (let i = 0; i < debrisCount; i++) {
-                const size = Math.random() * 0.4 + 0.15;
-                const debrisGeometry = new THREE.BoxGeometry(size, size, size);
+                const sizeX = Math.random() * 0.4 + 0.15;
+                const sizeY = Math.random() * 0.4 + 0.15;
+                const sizeZ = Math.random() * 0.4 + 0.15;
+                const debrisGeometry = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
                 const debrisMaterial = new THREE.MeshPhongMaterial({
                     color: 0xd4a574,
-                    emissive: 0xff3300,
-                    emissiveIntensity: 0.8,
-                    shininess: 30
+                    emissive: 0xff4400,
+                    emissiveIntensity: 1.2,
+                    shininess: 20
                 });
                 
                 const debrisMesh = new THREE.Mesh(debrisGeometry, debrisMaterial);
-                debrisMesh.position.copy(saturn.position);
+                
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                const radius = 1.4;
+                
+                debrisMesh.position.set(
+                    Math.sin(phi) * Math.cos(theta) * radius,
+                    Math.sin(phi) * Math.sin(theta) * radius,
+                    Math.cos(phi) * radius
+                );
                 
                 const speed = Math.random() * 0.12 + 0.04;
+                debrisMesh.velocity = debrisMesh.position.clone().normalize().multiplyScalar(speed);
+                
+                debrisMesh.rotationSpeed = new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.4,
+                    (Math.random() - 0.5) * 0.4,
+                    (Math.random() - 0.5) * 0.4
+                );
+                
+                debrisMesh.life = 1.0;
+                debrisMesh.gravity = -0.002;
+                
+                scene.add(debrisMesh);
+                debris.push(debrisMesh);
+            }
+
+            const smokeCount = deviceConfig.smokeCount;
+            for (let i = 0; i < smokeCount; i++) {
+                const size = Math.random() * 0.8 + 0.4;
+                const smokeGeometry = new THREE.SphereGeometry(size, 8, 8);
+                const smokeMaterial = new THREE.MeshBasicMaterial({
+                    color: i < smokeCount / 2 ? 0x333333 : 0x666666,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                
+                const smokeMesh = new THREE.Mesh(smokeGeometry, smokeMaterial);
+                smokeMesh.position.copy(saturn.position);
+                
+                const speed = Math.random() * 0.08 + 0.02;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.random() * Math.PI;
                 
-                debrisMesh.velocity = new THREE.Vector3(
+                smokeMesh.velocity = new THREE.Vector3(
                     Math.sin(phi) * Math.cos(theta) * speed,
                     Math.sin(phi) * Math.sin(theta) * speed,
                     Math.cos(phi) * speed
                 );
                 
-                debrisMesh.rotationSpeed = new THREE.Vector3(
-                    (Math.random() - 0.5) * 0.3,
-                    (Math.random() - 0.5) * 0.3,
-                    (Math.random() - 0.5) * 0.3
+                smokeMesh.life = 1.0;
+                smokeMesh.expansion = 0.01;
+                
+                scene.add(smokeMesh);
+                smoke.push(smokeMesh);
+            }
+
+            const sparkCount = deviceConfig.sparkCount;
+            for (let i = 0; i < sparkCount; i++) {
+                const size = Math.random() * 0.08 + 0.02;
+                const sparkGeometry = new THREE.SphereGeometry(size, 6, 6);
+                const sparkMaterial = new THREE.MeshBasicMaterial({
+                    color: Math.random() > 0.5 ? 0xffff00 : 0xffffff,
+                    transparent: true,
+                    opacity: 1
+                });
+                
+                const spark = new THREE.Mesh(sparkGeometry, sparkMaterial);
+                spark.position.copy(saturn.position);
+                
+                const speed = Math.random() * 0.35 + 0.15;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                
+                spark.velocity = new THREE.Vector3(
+                    Math.sin(phi) * Math.cos(theta) * speed,
+                    Math.sin(phi) * Math.sin(theta) * speed,
+                    Math.cos(phi) * speed
                 );
                 
-                debrisMesh.life = 1.0;
+                spark.life = 1.0;
+                spark.decay = Math.random() * 0.02 + 0.015;
+                spark.gravity = -0.003;
                 
-                scene.add(debrisMesh);
-                debris.push(debrisMesh);
+                scene.add(spark);
+                sparks.push(spark);
             }
             
-            const shockwaveCount = deviceConfig.isMobile ? 2 : 3;
+            const shockwaveCount = deviceConfig.isMobile ? 3 : 5;
             for (let i = 0; i < shockwaveCount; i++) {
-                const shockwaveGeometry = new THREE.RingGeometry(0.1, 0.3, deviceConfig.isMobile ? 64 : 128);
+                const shockwaveGeometry = new THREE.RingGeometry(0.1, 0.4, deviceConfig.isMobile ? 64 : 128);
                 const shockwaveMaterial = new THREE.MeshBasicMaterial({
-                    color: i === 0 ? 0xffff00 : 0xff8800,
+                    color: i === 0 ? 0xffffff : (i % 2 === 0 ? 0xffff00 : 0xff8800),
                     transparent: true,
-                    opacity: 0.9,
+                    opacity: 0.95,
                     side: THREE.DoubleSide
                 });
                 const shockwave = new THREE.Mesh(shockwaveGeometry, shockwaveMaterial);
                 shockwave.position.copy(saturn.position);
                 shockwave.scale.set(1, 1, 1);
-                shockwave.delay = i * 5;
+                shockwave.delay = i * 4;
                 shockwave.rotation.x = Math.random() * Math.PI;
                 shockwave.rotation.y = Math.random() * Math.PI;
                 scene.add(shockwave);
                 shockwaves.push(shockwave);
             }
 
-            const fireRingCount = deviceConfig.isMobile ? 3 : 5;
+            const fireRingCount = deviceConfig.isMobile ? 4 : 7;
             for (let i = 0; i < fireRingCount; i++) {
-                const fireRingGeo = new THREE.TorusGeometry(0.5 + i * 0.3, 0.1, deviceConfig.isMobile ? 8 : 16, deviceConfig.isMobile ? 50 : 100);
+                const fireRingGeo = new THREE.TorusGeometry(0.5 + i * 0.35, 0.12, deviceConfig.isMobile ? 8 : 16, deviceConfig.isMobile ? 50 : 100);
                 const fireRingMat = new THREE.MeshBasicMaterial({
-                    color: i % 2 === 0 ? 0xff4400 : 0xff8800,
+                    color: i % 2 === 0 ? 0xff3300 : 0xff9900,
                     transparent: true,
-                    opacity: 0.8,
+                    opacity: 0.9,
                     side: THREE.DoubleSide
                 });
                 const fireRing = new THREE.Mesh(fireRingGeo, fireRingMat);
                 fireRing.position.copy(saturn.position);
-                fireRing.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
-                fireRing.delay = i * 3;
+                fireRing.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.6;
+                fireRing.rotation.y = (Math.random() - 0.5) * 0.4;
+                fireRing.delay = i * 2;
                 scene.add(fireRing);
                 fireRings.push(fireRing);
             }
         }
 
         function updateParticles() {
-            if (particles.length === 0 && debris.length === 0 && 
-                shockwaves.length === 0 && fireRings.length === 0) {
-                return;
-            }
+            const totalParticles = particles.length + debris.length + smoke.length + 
+                                   sparks.length + shockwaves.length + fireRings.length;
             
-            const updateBatchSize = deviceConfig.isMobile ? 10 : 20;
+            document.getElementById('particleCount').textContent = totalParticles;
             
-            for (let i = 0; i < particles.length; i += updateBatchSize) {
-                const end = Math.min(i + updateBatchSize, particles.length);
-                for (let j = i; j < end; j++) {
-                    const particle = particles[j];
-                    particle.position.add(particle.velocity);
-                    particle.velocity.multiplyScalar(0.97);
-                    particle.life -= particle.decay;
-                    particle.material.opacity = particle.life;
-                }
-            }
+            if (totalParticles === 0) return;
+            
+            particles.forEach(p => {
+                p.position.add(p.velocity);
+                p.velocity.multiplyScalar(0.98);
+                p.velocity.y += p.gravity;
+                p.life -= p.decay;
+                p.material.opacity = Math.max(0, p.life);
+            });
             particles = particles.filter(p => {
                 if (p.life <= 0) {
                     scene.remove(p);
+                    if (p.geometry) p.geometry.dispose();
+                    if (p.material) p.material.dispose();
                     return false;
                 }
                 return true;
             });
             
-            for (let i = 0; i < debris.length; i += updateBatchSize) {
-                const end = Math.min(i + updateBatchSize, debris.length);
-                for (let j = i; j < end; j++) {
-                    const d = debris[j];
-                    d.position.add(d.velocity);
-                    d.velocity.multiplyScalar(0.96);
-                    d.rotation.x += d.rotationSpeed.x;
-                    d.rotation.y += d.rotationSpeed.y;
-                    d.rotation.z += d.rotationSpeed.z;
-                    
-                    d.life -= 0.006;
-                    d.material.opacity = d.life;
-                    d.material.emissiveIntensity = d.life * 0.8;
-                }
-            }
+            debris.forEach(d => {
+                d.position.add(d.velocity);
+                d.velocity.multiplyScalar(0.97);
+                d.velocity.y += d.gravity;
+                d.rotation.x += d.rotationSpeed.x;
+                d.rotation.y += d.rotationSpeed.y;
+                d.rotation.z += d.rotationSpeed.z;
+                
+                d.life -= 0.007;
+                d.material.opacity = Math.max(0, d.life);
+                d.material.emissiveIntensity = Math.max(0, d.life * 1.2);
+            });
             debris = debris.filter(d => {
                 if (d.life <= 0) {
                     scene.remove(d);
+                    if (d.geometry) d.geometry.dispose();
+                    if (d.material) d.material.dispose();
+                    return false;
+                }
+                return true;
+            });
+
+            smoke.forEach(s => {
+                s.position.add(s.velocity);
+                s.velocity.multiplyScalar(0.96);
+                s.velocity.y += 0.002;
+                s.scale.x += s.expansion;
+                s.scale.y += s.expansion;
+                s.scale.z += s.expansion;
+                s.life -= 0.008;
+                s.material.opacity = Math.max(0, s.life * 0.7);
+            });
+            smoke = smoke.filter(s => {
+                if (s.life <= 0) {
+                    scene.remove(s);
+                    if (s.geometry) s.geometry.dispose();
+                    if (s.material) s.material.dispose();
+                    return false;
+                }
+                return true;
+            });
+
+            sparks.forEach(sp => {
+                sp.position.add(sp.velocity);
+                sp.velocity.multiplyScalar(0.95);
+                sp.velocity.y += sp.gravity;
+                sp.life -= sp.decay;
+                sp.material.opacity = Math.max(0, sp.life);
+            });
+            sparks = sparks.filter(sp => {
+                if (sp.life <= 0) {
+                    scene.remove(sp);
+                    if (sp.geometry) sp.geometry.dispose();
+                    if (sp.material) sp.material.dispose();
                     return false;
                 }
                 return true;
@@ -676,34 +895,42 @@
                 if (sw.delay > 0) {
                     sw.delay--;
                 } else {
-                    sw.scale.x += 0.5;
-                    sw.scale.y += 0.5;
-                    sw.material.opacity -= 0.015;
-                    sw.rotation.z += 0.05;
-                }
-                
-                if (sw.material.opacity <= 0) {
-                    scene.remove(sw);
+                    sw.scale.x += 0.6;
+                    sw.scale.y += 0.6;
+                    sw.material.opacity -= 0.02;
+                    sw.rotation.z += 0.08;
                 }
             });
-            shockwaves = shockwaves.filter(sw => sw.material.opacity > 0);
+            shockwaves = shockwaves.filter(sw => {
+                if (sw.material.opacity <= 0) {
+                    scene.remove(sw);
+                    if (sw.geometry) sw.geometry.dispose();
+                    if (sw.material) sw.material.dispose();
+                    return false;
+                }
+                return true;
+            });
             
             fireRings.forEach(fr => {
                 if (fr.delay > 0) {
                     fr.delay--;
                 } else {
-                    fr.scale.x += 0.15;
-                    fr.scale.y += 0.15;
-                    fr.scale.z += 0.15;
-                    fr.material.opacity -= 0.02;
-                    fr.rotation.z += 0.1;
-                }
-                
-                if (fr.material.opacity <= 0) {
-                    scene.remove(fr);
+                    fr.scale.x += 0.18;
+                    fr.scale.y += 0.18;
+                    fr.scale.z += 0.18;
+                    fr.material.opacity -= 0.025;
+                    fr.rotation.z += 0.12;
                 }
             });
-            fireRings = fireRings.filter(fr => fr.material.opacity > 0);
+            fireRings = fireRings.filter(fr => {
+                if (fr.material.opacity <= 0) {
+                    scene.remove(fr);
+                    if (fr.geometry) fr.geometry.dispose();
+                    if (fr.material) fr.material.dispose();
+                    return false;
+                }
+                return true;
+            });
         }
 
         function triggerFlash() {
@@ -711,7 +938,7 @@
             flash.style.opacity = '1';
             setTimeout(() => {
                 flash.style.opacity = '0';
-            }, deviceConfig.isMobile ? 60 : 80);
+            }, deviceConfig.isMobile ? 70 : 100);
         }
 
         function triggerScreenShake(duration) {
@@ -725,7 +952,7 @@
             
             const shake = () => {
                 if (shakeFrames < maxShakeFrames) {
-                    const intensity = (1 - shakeFrames / maxShakeFrames) * (deviceConfig.isMobile ? 6 : 10);
+                    const intensity = (1 - shakeFrames / maxShakeFrames) * (deviceConfig.isMobile ? 8 : 12);
                     shakeOverlay.style.transform = `translate(${(Math.random() - 0.5) * intensity}px, ${(Math.random() - 0.5) * intensity}px)`;
                     shakeFrames++;
                     requestAnimationFrame(shake);
@@ -742,17 +969,17 @@
                 currentAnimation = null;
             }
             
-            if (isDestroyed && saturnGroup.scale.x < 0.15) return;
+            if (isDestroyed && saturnGroup.scale.x < 0.12) return;
             
             isAnimating = true;
             isDestroyed = true;
-            document.getElementById('planetStatus').textContent = 'DESTROYED!';
+            document.getElementById('planetStatus').textContent = '💥 DESTROYED!';
             document.getElementById('planetStatus').style.color = '#ff0000';
-            document.getElementById('planetStatus').style.textShadow = '0 0 10px #ff0000';
+            document.getElementById('planetStatus').style.textShadow = '0 0 15px #ff0000';
 
             if (saturnGroup.scale.x > 0.4) {
                 triggerFlash();
-                triggerScreenShake(deviceConfig.isMobile ? 15 : 25);
+                triggerScreenShake(deviceConfig.isMobile ? 18 : 30);
                 createExplosionParticles();
             }
 
@@ -766,8 +993,8 @@
                 frame++;
                 const progress = frame / maxFrames;
 
-                if (frame < 35 && !deviceConfig.isMobile) {
-                    const shakeIntensity = 0.4 * (1 - frame / 35);
+                if (frame < 40 && !deviceConfig.isMobile) {
+                    const shakeIntensity = 0.5 * (1 - frame / 40);
                     camera.position.x = originalCameraPos.x + (Math.random() - 0.5) * shakeIntensity;
                     camera.position.y = originalCameraPos.y + (Math.random() - 0.5) * shakeIntensity;
                     camera.position.z = originalCameraPos.z + (Math.random() - 0.5) * shakeIntensity * 0.3;
@@ -775,10 +1002,10 @@
                     camera.position.lerp(originalCameraPos, 0.08);
                 }
 
-                if (frame < 25 && !deviceConfig.isMobile) {
-                    saturnGroup.position.x = originalPosition.x + (Math.random() - 0.5) * 0.5;
-                    saturnGroup.position.y = originalPosition.y + (Math.random() - 0.5) * 0.5;
-                    saturnGroup.position.z = originalPosition.z + (Math.random() - 0.5) * 0.3;
+                if (frame < 30 && !deviceConfig.isMobile) {
+                    saturnGroup.position.x = originalPosition.x + (Math.random() - 0.5) * 0.6;
+                    saturnGroup.position.y = originalPosition.y + (Math.random() - 0.5) * 0.6;
+                    saturnGroup.position.z = originalPosition.z + (Math.random() - 0.5) * 0.4;
                 } else {
                     saturnGroup.position.lerp(originalPosition, 0.1);
                 }
@@ -787,27 +1014,27 @@
                 const scale = startScale - (startScale - targetScale) * Math.pow(progress, 1.5);
                 saturnGroup.scale.set(scale, scale, scale);
 
-                if (frame < 40) {
-                    saturnMaterial.color.lerp(new THREE.Color(0xff1100), deviceConfig.isMobile ? 0.08 : 0.12);
+                if (frame < 50) {
+                    saturnMaterial.color.lerp(new THREE.Color(0xff0000), 0.1);
                     saturnMaterial.emissive = new THREE.Color(0xff4400);
-                    saturnMaterial.emissiveIntensity = 3 * (1 - frame / 40);
+                    saturnMaterial.emissiveIntensity = 4 * (1 - frame / 50);
                     ringMaterial.emissive = new THREE.Color(0xff6600);
-                    ringMaterial.emissiveIntensity = 2 * (1 - frame / 40);
+                    ringMaterial.emissiveIntensity = 3 * (1 - frame / 50);
                 } else {
-                    saturnMaterial.color.lerp(new THREE.Color(0x111111), deviceConfig.isMobile ? 0.04 : 0.06);
-                    saturnMaterial.emissiveIntensity *= 0.95;
-                    ringMaterial.emissiveIntensity *= 0.95;
+                    saturnMaterial.color.lerp(new THREE.Color(0x0a0a0a), 0.05);
+                    saturnMaterial.emissiveIntensity *= 0.94;
+                    ringMaterial.emissiveIntensity *= 0.94;
                 }
 
-                saturnGroup.rotation.y += deviceConfig.isMobile ? 0.08 : 0.12 * (1 + progress * 4);
-                saturnGroup.rotation.x += deviceConfig.isMobile ? 0.04 : 0.06 * progress;
-                saturnGroup.rotation.z += deviceConfig.isMobile ? 0.02 : 0.03 * progress;
+                saturnGroup.rotation.y += (deviceConfig.isMobile ? 0.1 : 0.15) * (1 + progress * 5);
+                saturnGroup.rotation.x += (deviceConfig.isMobile ? 0.05 : 0.08) * progress;
+                saturnGroup.rotation.z += (deviceConfig.isMobile ? 0.03 : 0.05) * progress;
 
-                ring.material.opacity = (1 - progress) * 0.85;
-                glow.material.opacity = (1 - progress) * 0.15;
-                outerGlow.material.opacity = (1 - progress) * 0.08;
+                ring.material.opacity = Math.max(0, (1 - progress) * originalRingOpacity);
+                glow.material.opacity = Math.max(0, (1 - progress) * 0.15);
+                outerGlow.material.opacity = Math.max(0, (1 - progress) * 0.08);
 
-                if (currentGesture === 'open') {
+                if (currentGesture === 'open' && gestureConfidenceCount >= GESTURE_CONFIDENCE_THRESHOLD) {
                     camera.position.copy(originalCameraPos);
                     saturnGroup.position.copy(originalPosition);
                     isAnimating = false;
@@ -835,57 +1062,66 @@
                 currentAnimation = null;
             }
             
-            if (!isDestroyed && saturnGroup.scale.x > 0.92) return;
+            if (!isDestroyed && saturnGroup.scale.x > 0.95) return;
             
             isAnimating = true;
             isDestroyed = false;
-            document.getElementById('planetStatus').textContent = 'Normal';
+            document.getElementById('planetStatus').textContent = '✨ Restoring...';
             document.getElementById('planetStatus').style.color = '#00ff00';
-            document.getElementById('planetStatus').style.textShadow = '0 0 10px #00ff00';
+            document.getElementById('planetStatus').style.textShadow = '0 0 15px #00ff00';
 
-            particles.forEach(p => scene.remove(p));
+            particles.forEach(p => { scene.remove(p); if (p.geometry) p.geometry.dispose(); if (p.material) p.material.dispose(); });
             particles = [];
-            debris.forEach(d => scene.remove(d));
+            debris.forEach(d => { scene.remove(d); if (d.geometry) d.geometry.dispose(); if (d.material) d.material.dispose(); });
             debris = [];
-            shockwaves.forEach(sw => scene.remove(sw));
+            smoke.forEach(s => { scene.remove(s); if (s.geometry) s.geometry.dispose(); if (s.material) s.material.dispose(); });
+            smoke = [];
+            sparks.forEach(sp => { scene.remove(sp); if (sp.geometry) sp.geometry.dispose(); if (sp.material) sp.material.dispose(); });
+            sparks = [];
+            shockwaves.forEach(sw => { scene.remove(sw); if (sw.geometry) sw.geometry.dispose(); if (sw.material) sw.material.dispose(); });
             shockwaves = [];
-            fireRings.forEach(fr => scene.remove(fr));
+            fireRings.forEach(fr => { scene.remove(fr); if (fr.geometry) fr.geometry.dispose(); if (fr.material) fr.material.dispose(); });
             fireRings = [];
 
             const startScale = saturnGroup.scale.x;
             let frame = 0;
-            const maxFrames = deviceConfig.isMobile ? 60 : 90;
+            const maxFrames = deviceConfig.isMobile ? 70 : 100;
             
             const restoreAnimation = () => {
                 frame++;
                 const progress = frame / maxFrames;
 
-                const easeProgress = progress < 0.65 ? 
-                    Math.pow(progress / 0.65, 0.8) : 
-                    1 - Math.pow((progress - 0.65) / 0.35, 2) * 0.12;
+                const easeProgress = progress < 0.6 ? 
+                    Math.pow(progress / 0.6, 0.75) : 
+                    1 - Math.pow((progress - 0.6) / 0.4, 2) * 0.1;
                 
                 const scale = startScale + (1 - startScale) * easeProgress;
                 saturnGroup.scale.set(scale, scale, scale);
 
-                saturnMaterial.color.lerp(originalColor, deviceConfig.isMobile ? 0.05 : 0.08);
+                saturnMaterial.color.lerp(originalColor, 0.06);
                 saturnMaterial.emissive = new THREE.Color(0x000000);
                 saturnMaterial.emissiveIntensity = 0;
                 ringMaterial.emissive = new THREE.Color(0x000000);
                 ringMaterial.emissiveIntensity = 0;
 
-                ring.material.opacity = Math.min(0.85, progress * 1.3);
-                glow.material.opacity = Math.min(0.15, progress * 0.23);
-                outerGlow.material.opacity = Math.min(0.08, progress * 0.12);
+                const ringOpacity = Math.min(originalRingOpacity, progress * 1.4);
+                ring.material.opacity = ringOpacity;
+                ring.rotation.x = originalRingRotation.x;
+                ring.rotation.y = originalRingRotation.y;
+                ring.rotation.z = originalRingRotation.z;
+                
+                glow.material.opacity = Math.min(0.15, progress * 0.25);
+                outerGlow.material.opacity = Math.min(0.08, progress * 0.13);
 
-                saturnGroup.rotation.y += deviceConfig.isMobile ? 0.01 : 0.015;
-                saturnGroup.rotation.x *= deviceConfig.isMobile ? 0.96 : 0.92;
-                saturnGroup.rotation.z *= deviceConfig.isMobile ? 0.96 : 0.92;
+                saturnGroup.rotation.y += deviceConfig.isMobile ? 0.012 : 0.018;
+                saturnGroup.rotation.x *= 0.93;
+                saturnGroup.rotation.z *= 0.93;
 
-                if (frame > 30) {
-                    glowLight.intensity = 1 + Math.sin(frame * 0.3) * 0.3;
+                if (frame > 35) {
+                    glowLight.intensity = 1 + Math.sin(frame * 0.25) * 0.35;
                 }
 
-                if (currentGesture === 'fist') {
+                if (currentGesture === 'fist' && gestureConfidenceCount >= GESTURE_CONFIDENCE_THRESHOLD) {
                     isAnimating = false;
                     destroyPlanet();
                     return;
@@ -897,12 +1133,16 @@
                     saturnGroup.scale.set(1, 1, 1);
                     saturnGroup.position.copy(originalPosition);
                     saturnMaterial.color.copy(originalColor);
-                    ring.material.opacity = 0.85;
+                    ring.material.opacity = originalRingOpacity;
+                    ring.rotation.x = originalRingRotation.x;
+                    ring.rotation.y = originalRingRotation.y;
+                    ring.rotation.z = originalRingRotation.z;
                     glow.material.opacity = 0.15;
                     outerGlow.material.opacity = 0.08;
                     glowLight.intensity = 1;
                     isAnimating = false;
                     currentAnimation = null;
+                    document.getElementById('planetStatus').textContent = 'Normal';
                 }
             };
 
@@ -927,36 +1167,46 @@
             const middleBase = hand[9];
             const ringBase = hand[13];
             const pinkyBase = hand[17];
-
             const thumbBase = hand[2];
-
-            const indexCurled = distance3D(indexTip, indexBase) < 0.06;
-            const middleCurled = distance3D(middleTip, middleBase) < 0.06;
-            const ringCurled = distance3D(ringTip, ringBase) < 0.06;
-            const pinkyCurled = distance3D(pinkyTip, pinkyBase) < 0.06;
-            const thumbCurled = distance3D(thumbTip, thumbBase) < 0.08;
-            
-            const curledCount = [indexCurled, middleCurled, ringCurled, pinkyCurled, thumbCurled].filter(Boolean).length;
-
-            const distances = [
-                distance3D(wrist, indexTip),
-                distance3D(wrist, middleTip),
-                distance3D(wrist, ringTip),
-                distance3D(wrist, pinkyTip)
-            ];
-            const avgDistance = distances.reduce((a, b) => a + b, 0) / distances.length;
-
             const indexMid = hand[6];
             const middleMid = hand[10];
             const ringMid = hand[14];
             const pinkyMid = hand[18];
+
+            const indexCurled = distance3D(indexTip, indexBase) < 0.095;
+            const middleCurled = distance3D(middleTip, middleBase) < 0.095;
+            const ringCurled = distance3D(ringTip, ringBase) < 0.095;
+            const pinkyCurled = distance3D(pinkyTip, pinkyBase) < 0.095;
+            const thumbCurled = distance3D(thumbTip, thumbBase) < 0.12;
             
-            const indexExtended = distance3D(indexTip, wrist) > distance3D(indexMid, wrist) * 1.2;
-            const middleExtended = distance3D(middleTip, wrist) > distance3D(middleMid, wrist) * 1.2;
-            const ringExtended = distance3D(ringTip, wrist) > distance3D(ringMid, wrist) * 1.2;
-            const pinkyExtended = distance3D(pinkyTip, wrist) > distance3D(pinkyMid, wrist) * 1.2;
+            const indexExtended = distance3D(indexTip, wrist) > distance3D(indexMid, wrist) * 1.1;
+            const middleExtended = distance3D(middleTip, wrist) > distance3D(middleMid, wrist) * 1.1;
+            const ringExtended = distance3D(ringTip, wrist) > distance3D(ringMid, wrist) * 1.1;
+            const pinkyExtended = distance3D(pinkyTip, wrist) > distance3D(pinkyMid, wrist) * 1.1;
+            const thumbExtended = distance3D(thumbTip, wrist) > distance3D(thumbBase, wrist) * 1.1;
+
+            const indexLength = distance3D(indexTip, wrist);
+            const middleLength = distance3D(middleTip, wrist);
+            const ringLength = distance3D(ringTip, wrist);
+            const pinkyLength = distance3D(pinkyTip, wrist);
+            const thumbLength = distance3D(thumbTip, wrist);
+
+            const isIndexUp = indexExtended && indexLength > 0.10;
+            const isPinkyUp = pinkyExtended && pinkyLength > 0.09;
+            const isMiddleDown = middleCurled || !middleExtended;
+            const isRingDown = ringCurled || !ringExtended;
             
+            const isRockGesture = isIndexUp && isPinkyUp && isMiddleDown && isRingDown;
+            
+            if (isRockGesture) {
+                return 'rock';
+            }
+
+            const curledCount = [indexCurled, middleCurled, ringCurled, pinkyCurled].filter(Boolean).length;
             const extendedCount = [indexExtended, middleExtended, ringExtended, pinkyExtended].filter(Boolean).length;
+
+            const distances = [indexLength, middleLength, ringLength, pinkyLength];
+            const avgDistance = distances.reduce((a, b) => a + b, 0) / distances.length;
 
             const palmCenter = hand[9];
             const palmToFingers = [
@@ -967,8 +1217,9 @@
             ];
             const avgPalmDistance = palmToFingers.reduce((a, b) => a + b, 0) / palmToFingers.length;
 
-            const isFist = (curledCount >= 4) || (avgDistance < 0.13) || (extendedCount <= 1) || (avgPalmDistance < 0.08);
-            const isOpen = (extendedCount >= 3) && (avgDistance > 0.17) && (avgPalmDistance > 0.12);
+            const isFist = (curledCount >= 3) && (avgDistance < 0.18) && (avgPalmDistance < 0.13);
+            
+            const isOpen = (extendedCount >= 3) && (avgDistance > 0.12) && (avgPalmDistance > 0.08);
 
             if (isFist) {
                 return 'fist';
@@ -986,6 +1237,40 @@
             return Math.sqrt(dx * dx + dy * dy + dz * dz);
         }
 
+        function updatePerformanceStats() {
+            frameCount++;
+            const currentTime = performance.now();
+            if (currentTime >= lastFpsUpdate + 1000) {
+                fps = Math.round((frameCount * 1000) / (currentTime - lastFpsUpdate));
+                frameCount = 0;
+                lastFpsUpdate = currentTime;
+                
+                document.getElementById('fpsStatus').textContent = fps;
+                const fpsColor = fps >= 50 ? '#00ff00' : fps >= 30 ? '#ffaa00' : '#ff3333';
+                document.getElementById('fpsStatus').style.color = fpsColor;
+            }
+
+            const particleLoad = (particles.length + debris.length + smoke.length + sparks.length) / 600;
+            gpuUsage = Math.min(100, Math.round(particleLoad * 100 + (60 - fps)));
+            document.getElementById('gpuStatus').textContent = gpuUsage + '%';
+            document.getElementById('gpuBar').style.width = gpuUsage + '%';
+            
+            const cpuLoad = isAnimating ? 0.7 : 0.3;
+            cpuUsage = Math.min(100, Math.round((60 - fps) * cpuLoad + Math.random() * 10 + 20));
+            document.getElementById('cpuStatus').textContent = cpuUsage + '%';
+            document.getElementById('cpuBar').style.width = cpuUsage + '%';
+
+            if (performance.memory) {
+                const memUsed = performance.memory.usedJSHeapSize;
+                const memTotal = performance.memory.jsHeapSizeLimit;
+                ramUsage = Math.round((memUsed / memTotal) * 100);
+            } else {
+                ramUsage = Math.min(100, Math.round(30 + (particles.length + debris.length) / 10 + Math.random() * 5));
+            }
+            document.getElementById('ramStatus').textContent = ramUsage + '%';
+            document.getElementById('ramBar').style.width = ramUsage + '%';
+        }
+
         const videoElement = document.getElementById('camera');
         const handStatusEl = document.getElementById('handStatus');
         const gestureStatusEl = document.getElementById('gestureStatus');
@@ -993,23 +1278,14 @@
         
         if (deviceConfig.isMobile) {
             document.getElementById('statusPanel').classList.add('mobile');
-            deviceModeEl.textContent = 'Mobile';
+            deviceModeEl.textContent = '📱 Mobile';
             deviceModeEl.style.color = '#ff9900';
-            
-            const mobileWarning = document.getElementById('mobileWarning');
-            mobileWarning.style.display = 'block';
-            setTimeout(() => {
-                mobileWarning.style.opacity = '0';
-                setTimeout(() => {
-                    mobileWarning.style.display = 'none';
-                }, 1000);
-            }, 3000);
         } else {
-            deviceModeEl.textContent = 'Desktop';
+            deviceModeEl.textContent = '🖥️ Desktop';
         }
         
         document.getElementById('deviceInfo').textContent = 
-            `${deviceConfig.isMobile ? '📱 Mobile' : '🖥️ Desktop'} Mode | Optimized for ${deviceConfig.isMobile ? 'performance' : 'quality'}`;
+            `${deviceConfig.isMobile ? '📱 Mobile' : '🖥️ Desktop'} Mode | Optimized Settings`;
 
         const hands = new Hands({
             locateFile: (file) => {
@@ -1020,21 +1296,54 @@
         hands.setOptions({
             maxNumHands: 1,
             modelComplexity: deviceConfig.isMobile ? 0 : 1,
-            minDetectionConfidence: 0.6,
-            minTrackingConfidence: 0.6
+            minDetectionConfidence: deviceConfig.gestureConfidence,
+            minTrackingConfidence: deviceConfig.gestureConfidence
         });
 
         hands.onResults((results) => {
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                handStatusEl.textContent = 'Yes';
+                handStatusEl.textContent = '✓ Detected';
                 handStatusEl.style.color = '#00ff00';
 
                 const gesture = detectGesture(results.multiHandLandmarks);
+                const hand = results.multiHandLandmarks[0];
+                const indexTip = hand[8];
+                const pinkyTip = hand[20];
                 
-                if (gesture === 'fist') {
+                if (gesture === previousGesture) {
+                    gestureConfidenceCount++;
+                } else {
+                    gestureConfidenceCount = 1;
+                    previousGesture = gesture;
+                }
+                
+                if (gesture === 'rock' && gestureConfidenceCount >= 2) {
+                    gestureStatusEl.textContent = '🤟 Rock';
+                    gestureStatusEl.style.color = '#ff00ff';
+                    gestureStatusEl.style.textShadow = '0 0 10px #ff00ff';
+                    
+                    gestureControlEnabled = true;
+                    autoRotate = false;
+                    currentGesture = 'rock';
+                    
+                    const avgX = (indexTip.x + pinkyTip.x) / 2;
+                    const avgY = (indexTip.y + pinkyTip.y) / 2;
+                    
+                    const targetX = (avgX - 0.5) * 8;
+                    const targetY = (0.5 - avgY) * 6;
+                    
+                    saturnGroup.position.x += (targetX - saturnGroup.position.x) * 0.1;
+                    saturnGroup.position.y += (targetY - saturnGroup.position.y) * 0.1;
+                    
+                    document.getElementById('controlMode').textContent = '🤟 Gesture';
+                    document.getElementById('controlMode').style.color = '#ff00ff';
+                    
+                } else if (gesture === 'fist' && gestureConfidenceCount >= GESTURE_CONFIDENCE_THRESHOLD) {
                     gestureStatusEl.textContent = '✊ Fist';
                     gestureStatusEl.style.color = '#ff3333';
-                    gestureStatusEl.style.textShadow = '0 0 8px #ff3333';
+                    gestureStatusEl.style.textShadow = '0 0 10px #ff3333';
+                    
+                    gestureControlEnabled = false;
                     
                     if (currentGesture !== 'fist') {
                         currentGesture = 'fist';
@@ -1047,10 +1356,12 @@
                         destroyPlanet();
                     }
                     
-                } else if (gesture === 'open') {
+                } else if (gesture === 'open' && gestureConfidenceCount >= GESTURE_CONFIDENCE_THRESHOLD) {
                     gestureStatusEl.textContent = '✋ Open';
                     gestureStatusEl.style.color = '#33ff33';
-                    gestureStatusEl.style.textShadow = '0 0 8px #33ff33';
+                    gestureStatusEl.style.textShadow = '0 0 10px #33ff33';
+                    
+                    gestureControlEnabled = false;
                     
                     if (currentGesture !== 'open') {
                         currentGesture = 'open';
@@ -1064,9 +1375,11 @@
                     }
                     
                 } else if (gesture === 'neutral') {
-                    gestureStatusEl.textContent = '🤏 Transitioning';
+                    gestureStatusEl.textContent = '🤏 Detecting...';
                     gestureStatusEl.style.color = '#ffaa33';
                     gestureStatusEl.style.textShadow = '0 0 5px #ffaa33';
+                    
+                    gestureControlEnabled = false;
                     
                     if (currentGesture !== 'neutral') {
                         gestureHoldTime = 0;
@@ -1074,26 +1387,36 @@
                     currentGesture = 'neutral';
                 }
             } else {
-                handStatusEl.textContent = 'No';
+                handStatusEl.textContent = '✗ None';
                 handStatusEl.style.color = '#ff3333';
                 gestureStatusEl.textContent = 'None';
                 gestureStatusEl.style.color = '#666666';
                 gestureStatusEl.style.textShadow = 'none';
                 currentGesture = 'none';
+                previousGesture = 'none';
                 gestureHoldTime = 0;
+                gestureConfidenceCount = 0;
+                gestureControlEnabled = false;
+                
+                if (!isDragging && !autoRotate) {
+                    saturnGroup.position.x += (0 - saturnGroup.position.x) * 0.05;
+                    saturnGroup.position.y += (0 - saturnGroup.position.y) * 0.05;
+                }
             }
         });
 
         async function initCamera() {
             try {
                 const videoConfig = deviceConfig.isMobile ? {
-                    width: 640,
-                    height: 480,
-                    facingMode: 'user'
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: 'user',
+                    frameRate: { ideal: 30, max: 30 }
                 } : {
-                    width: 1280,
-                    height: 720,
-                    facingMode: 'user'
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'user',
+                    frameRate: { ideal: 60, max: 60 }
                 };
                 
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -1112,8 +1435,8 @@
                     onFrame: async () => {
                         await hands.send({ image: videoElement });
                     },
-                    width: videoConfig.width,
-                    height: videoConfig.height
+                    width: videoConfig.width.ideal || videoConfig.width,
+                    height: videoConfig.height.ideal || videoConfig.height
                 });
                 
                 cameraInstance.start();
@@ -1121,6 +1444,7 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('statusPanel').style.display = 'block';
                 initPanelToggle();
+                initCameraToggle();
 
             } catch (error) {
                 console.error('Camera error:', error);
@@ -1128,39 +1452,72 @@
                     <h1 style="color: #ff3333;">⚠️ CAMERA ACCESS DENIED</h1>
                     <p style="margin-top: 20px; font-size: 16px;">Please allow camera access to control Saturn</p>
                     <p style="margin-top: 10px; font-size: 12px; color: #888;">Error: ${error.message}</p>
-                    ${deviceConfig.isMobile ? '<p style="margin-top: 15px; font-size: 14px; color: #ff9900;">📱 Tips: Use front camera for best results</p>' : ''}
                 `;
             }
         }
         
-        function initPanelToggle() {
-          const toggleBtn = document.getElementById('togglePanelBtn');
-          const panelContent = document.getElementById('panelContent');
-          
-          toggleBtn.addEventListener('click', function() {
-            panelContent.classList.toggle('expanded');
-            panelContent.classList.toggle('collapsed');
-            
-            if (panelContent.classList.contains('collapsed')) {
-              toggleBtn.textContent = '▼';;
-            } else {
-              toggleBtn.textContent = '▲' ;;
-            }
-          });
-          
-          if (deviceConfig.isMobile) {
-            panelContent.classList.remove('expanded');
-            panelContent.classList.add('collapsed');
-            toggleBtn.textContent = '▼';
-          }
+        function initCameraToggle() {
+    const cameraToggle = document.getElementById('cameraToggle');
+    const cameraElement = document.getElementById('camera');
+    
+    cameraToggle.addEventListener('click', function() {
+        cameraVisible = !cameraVisible;
+        
+        if (cameraVisible) {
+            cameraElement.classList.remove('hidden');
+            cameraToggle.innerHTML = '<i class="bx bxs-camera-off"></i> Hide Camera';
+            cameraToggle.style.bottom = '210px';
+        } else {
+            cameraElement.classList.add('hidden');
+            cameraToggle.innerHTML = '<i class="bx bxs-camera"></i> Show Camera';
+            cameraToggle.style.bottom = '20px';
         }
+    });
+    
+    if (deviceConfig.isMobile) {
+        cameraToggle.style.bottom = '15px';
+    }
+}
+        
+        function initPanelToggle() {
+    const toggleBtn = document.getElementById('togglePanelBtn');
+    const panelContent = document.getElementById('panelContent');
+    
+    toggleBtn.addEventListener('click', function() {
+        panelContent.classList.toggle('expanded');
+        panelContent.classList.toggle('collapsed');
+        
+        if (panelContent.classList.contains('collapsed')) {
+            toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+        } else {
+            toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+        }
+    });
+    
+    if (deviceConfig.isMobile) {
+        panelContent.classList.remove('expanded');
+        panelContent.classList.add('collapsed');
+        toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+    }
+}
         
         function animate() {
             requestAnimationFrame(animate);
 
             if (!isDestroyed && !isAnimating) {
-                saturnGroup.rotation.y += deviceConfig.isMobile ? 0.003 : 0.004;
-                saturnGroup.position.y = Math.sin(Date.now() * 0.0008) * (deviceConfig.isMobile ? 0.08 : 0.12);
+                if (autoRotate && !isDragging && !gestureControlEnabled) {
+                    saturnGroup.rotation.y += deviceConfig.isMobile ? 0.003 : 0.004;
+                    saturnGroup.position.y = Math.sin(Date.now() * 0.0008) * (deviceConfig.isMobile ? 0.08 : 0.12);
+                } else if (isDragging || !autoRotate) {
+                    targetRotation.x *= 0.95;
+                    targetRotation.y *= 0.95;
+                    
+                    saturnGroup.rotation.x += targetRotation.x * 0.01;
+                    saturnGroup.rotation.y += targetRotation.y * 0.01;
+                    
+                    currentRotationVelocity.x = targetRotation.x;
+                    currentRotationVelocity.y = targetRotation.y;
+                }
                 
                 ring.rotation.z += deviceConfig.isMobile ? 0.0003 : 0.0005;
                 
@@ -1168,6 +1525,7 @@
             }
 
             updateParticles();
+            updatePerformanceStats();
 
             renderer.render(scene, camera);
         }
@@ -1256,6 +1614,155 @@
                 e.preventDefault();
             }
         });
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            autoRotate = false;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+            canvas.style.cursor = 'grabbing';
+            
+            document.getElementById('controlMode').textContent = '🖱️ Manual';
+            document.getElementById('controlMode').style.color = '#ffaa00';
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging && !gestureControlEnabled) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                targetRotation.y = deltaX * 0.5;
+                targetRotation.x = deltaY * 0.5;
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+            
+            setTimeout(() => {
+                if (!isDragging && !gestureControlEnabled) {
+                    autoRotate = true;
+                    document.getElementById('controlMode').textContent = '🔄 Auto';
+                    document.getElementById('controlMode').style.color = '#00ff00';
+                }
+            }, 2000);
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                autoRotate = false;
+                touchStartPos = {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                };
+                previousMousePosition = {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                };
+                lastTouchTime = Date.now();
+                
+                document.getElementById('controlMode').textContent = '👆 Touch';
+                document.getElementById('controlMode').style.color = '#ffaa00';
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1 && !gestureControlEnabled) {
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - previousMousePosition.x;
+                const deltaY = touch.clientY - previousMousePosition.y;
+                
+                targetRotation.y = deltaX * 0.8;
+                targetRotation.x = deltaY * 0.8;
+                
+                previousMousePosition = {
+                    x: touch.clientX,
+                    y: touch.clientY
+                };
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', (e) => {
+            const touchDuration = Date.now() - lastTouchTime;
+            const touchDistance = Math.sqrt(
+                Math.pow(previousMousePosition.x - touchStartPos.x, 2) +
+                Math.pow(previousMousePosition.y - touchStartPos.y, 2)
+            );
+            
+            if (touchDuration < 300 && touchDistance > 50) {
+                const dx = previousMousePosition.x - touchStartPos.x;
+                const dy = previousMousePosition.y - touchStartPos.y;
+                
+                targetRotation.y = dx * 2;
+                targetRotation.x = dy * 2;
+            }
+            
+            isDragging = false;
+            
+            setTimeout(() => {
+                if (!isDragging && !gestureControlEnabled) {
+                    autoRotate = true;
+                    document.getElementById('controlMode').textContent = '🔄 Auto';
+                    document.getElementById('controlMode').style.color = '#00ff00';
+                }
+            }, 2000);
+        }, { passive: true });
+
+        let initialPinchDistance = 0;
+        let initialCameraZ = camera.position.z;
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+                initialCameraZ = camera.position.z;
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                const scale = distance / initialPinchDistance;
+                const newZ = initialCameraZ / scale;
+                
+                camera.position.z = Math.max(4, Math.min(12, newZ));
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            camera.position.z += e.deltaY * zoomSpeed * 0.01;
+            camera.position.z = Math.max(4, Math.min(12, camera.position.z));
+        }, { passive: false });
+
+        canvas.style.cursor = 'grab';
+
+        function cleanupMemory() {
+            if (particles.length > deviceConfig.particleCount * 1.5) {
+                const excess = particles.slice(0, particles.length - deviceConfig.particleCount);
+                excess.forEach(p => {
+                    scene.remove(p);
+                    if (p.geometry) p.geometry.dispose();
+                    if (p.material) p.material.dispose();
+                });
+                particles = particles.slice(particles.length - deviceConfig.particleCount);
+            }
+        }
+
+        setInterval(cleanupMemory, 5000);
 
         createStarField();
         initCamera();
